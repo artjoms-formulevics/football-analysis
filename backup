@@ -1,0 +1,123 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Mar 12 17:12:06 2021
+
+@author: afo
+"""
+
+# def train_model(data):
+        
+#     train, test = train_test_split(data, test_size=0.1)
+    
+#     sc = StandardScaler()
+#     train.loc[:, train.columns != 'goals'] = sc.fit_transform(train.loc[:, train.columns != 'goals'] )  
+#     test.loc[:, test.columns != 'goals'] = sc.transform(test.loc[:, test.columns != 'goals'])  
+    
+#     ## Split to features and classes
+#     X_train = train.drop(['goals'], axis=1, errors='ignore')
+#     y_train = train['goals']
+    
+#     X_test = test.drop(['goals'], axis=1, errors='ignore')
+#     y_test = test['goals']
+    
+#     features = X_test.columns
+    
+## Naive Bayes parameters & scoring mechanism
+# param_grid = [{'n_estimators': [500], 'criterion': ['mse'], 'bootstrap': [True]}]
+# param_grid = [{'n_neighbors': [5,7,9,15], 'weights': ['uniform', 'distance'], 'p': [1,2], 'algorithm': ['auto', 'ball_tree', 'kd_tree']}]
+# scores = 'r2'
+# #scores = ['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted']
+
+# # Main model object
+# # with parallel_backend('threading',n_jobs=8):
+# model = GridSearchCV(KNeighborsRegressor(), param_grid=param_grid, scoring=scores, cv=10,verbose=10,
+#                       refit = 'r2', return_train_score=True)
+
+# # neigh = KNeighborsRegressor(n_neighbors=10)
+# # neigh.fit(X_train, y_train)
+# # y_true, y_pred = y_test, neigh.predict(X_test)
+
+# # Fit the model and print the best parameters
+# model.fit(X_train, y_train) #. values.ravel()
+# print('Best params: %s' % model.best_params_)
+
+# # cv_curves = pd.DataFrame(model.cv_results_)
+# # results = ['mean_test_score',
+# #         'mean_train_score',
+# #         'std_test_score', 
+# #         'std_train_score']
+
+# ## Getting results overview
+# y_true, y_pred = y_test, model.predict(X_test)
+
+# d = {'actual':y_true,'rounded_pred': np.round(y_pred), 'pred':y_pred, }
+# comparison = pd.DataFrame.from_dict(d)
+
+# print(comparison)
+
+# print()
+# print("MSE: %0.5f" % mean_squared_error(y_true, y_pred))
+# print("MAE: %0.5f" % mean_absolute_error(y_true, y_pred))
+# print("R2: %0.5f" % r2_score(y_true, y_pred))
+
+# features = model.estimator.feature_importances_
+
+#     return y_true, y_pred, comparison, model, features
+
+
+# y_true, y_pred, comparison, model, features = train_model(data)
+
+
+# importance= model.best_estimator_.feature_importances_
+
+# for i,v in enumerate(importance):
+#  	print('Feature: %0d, Score: %.5f' % (i,v))
+# # plot feature importance
+# plt.bar([x for x in range(len(importance))], importance)
+# plt.show()
+
+
+# test_scores = model.cv_results_['mean_test_score']
+# train_scores = model.cv_results_['mean_train_score'] 
+
+# plt.plot(test_scores, label='test')
+# plt.plot(train_scores, label='train')
+# plt.legend(loc='best')
+# plt.show()
+
+# # print_full(comparison)
+
+
+# # y_prob = model.predict_proba(X_test)  
+# # y_prob = np.array(y_prob)
+
+
+# confusion_matrix(comparison['actual'].astype(int), comparison['rounded_pred'].astype(int))
+
+
+# print()
+# print("Classfification Report:")
+# print()
+# print(classification_report(comparison['actual'].astype(int), comparison['rounded_pred'].astype(int)))
+# print()
+# print("Confusion Matrix:")
+# print()
+# print(confusion_matrix(comparison['actual'].astype(int), comparison['rounded_pred'].astype(int)))
+# print()
+# print("Accuracy: %0.3f" % accuracy_score(comparison['actual'].astype(int), comparison['rounded_pred'].astype(int)))
+# print("Balanced Accuracy: %0.3f" % balanced_accuracy_score(comparison['actual'].astype(int), comparison['rounded_pred'].astype(int)))
+# print("Precision: %0.3f" % precision_score(comparison['actual'].astype(int), comparison['rounded_pred'].astype(int), average='weighted'))
+# print("Recall: %0.3f" % recall_score(comparison['actual'].astype(int), comparison['rounded_pred'].astype(int), average='weighted'))
+# print("F1 Score: %0.3f" % f1_score(comparison['actual'].astype(int), comparison['rounded_pred'].astype(int), average='weighted'))
+# #print("ROC AUC: %0.3f" % roc_auc_score(y_true, y_pred, average='weighted', multi_class='ovo'))
+
+
+# data.loc[data['goals'] == 1.0, 'goals'] = 0.0
+
+# data['goals'] = to_categorical(pd.DataFrame(data['goals'])).tolist()
+
+# ohe = OneHotEncoder()
+
+# ohe.fit(pd.DataFrame(data['goals']))
+# data['goals'] = ohe.transform(pd.DataFrame(data['goals'])).toarray().tolist()

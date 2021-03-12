@@ -124,3 +124,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 database.sqlite
+.DS_Store
+*.spydata
+raw_data_backup.pickle

@@ -131,6 +131,10 @@ One of the major features to be used later is the [ELO rating](https://www.elora
 | elo_a  | float64 | elo rating before the match of the away team            |
 | elo_h  | float64 | elo rating before the match of the home team            |
 
+#### Tidying column names
+
+Last step before data is saved - to tidy column names and collate the league/yearly data to a single dataset that is ready to be used for the further analysis.
+
 ### Step 2: ...
 
 ...

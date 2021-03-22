@@ -135,9 +135,9 @@ One of the major features to be used later is the [ELO rating](https://www.elora
 
 Last step before data is saved - to tidy column names and collate the league/yearly data to a single dataset that is ready to be used for the further analysis.
 
-### Step 2: ...
+### Step 2: Data Cleaning & Processing
 
-...
+Now it is time clean and process the data necessary for the future model training.
 
 ## Results
 

@@ -131,17 +131,80 @@ One of the major features to be used later is the [ELO rating](https://www.elora
 | elo_a  | float64 | elo rating before the match of the away team            |
 | elo_h  | float64 | elo rating before the match of the home team            |
 
-#### Tidying column names
-
-Last step before data is saved - to tidy column names and collate the league/yearly data to a single dataset that is ready to be used for the further analysis.
-
 ### Step 2: Data Cleaning & Processing
 
-Now it is time clean and process the data necessary for the future model training.
+Now it is time clean and process the data necessary for the future model training. At this stage we firstly remove several columns that present way to detailed statistics that might be not fully relevant to predicting match goals. The columns removed are:
 
-## Results
+* ...
 
-...
+For all the features we are planning to use, we have to do some pre-processing. Namely, we do not know the exact statistics of the match before it was played. So we need to take historical averages for each team. For that we are splitting data on per-team level, sorting it historically and calculating averages from some time perion in the past. The periods that were tried are:
+
+* Moving average through all the historical data
+* Average from last 10 games
+* Average from last 5 games
+* Average from last 3 games
+
+In the end, average of last 5 games was selected, as it was the most descriptive for the data. 
+
+In this stage we also define out target variable, that we are willing to predict. This is going to be goal difference (simply goals by home team minus goals by away team). That would imply a win of home team in case of positive number, lose of home team in case of negative number and draw in case the value is equal to zero.
+
+As after splitting to each team-level data, each game is represented twice (one game is played beween to team, so a game between Liverool and Manchester United will be part of both Liverpool's and United's subsets), the duplciates are identified and removed.
+
+The data then is getting splitted to train and test set with the ratio of 90% / 10% and getting scaled to a normal distribution based on the training set.
+
+### Step 3: Model Training
+
+The model is built using TF 2.0 / Keras. Multiple models were examined for a long time. The final parameters selected were:
+
+* Model = Keras Regressor
+* Input layer with 20 neurons - ReLU & L2 regularization
+* Three hidden layers (16, 10 & 6 neurons) - all ReLU
+* Output layer - linear activation
+* Optimizer - Adam (LR = 0.001)
+* Loss = MSE (+ MAE for reporting)
+* Batch Size = 10
+* N of Epochs = 100
+
+The model looks like this:
+
+```
+def keras_model():
+    
+    model = keras.Sequential()
+    model.add(layers.Dense(20, input_dim=col_number, activation='relu', kernel_initializer='normal', kernel_regularizer='l2'))
+    model.add(layers.Dropout(0.2))
+    model.add(layers.Dense(16, activation='relu'))
+    model.add(layers.Dropout(0.2))
+    model.add(layers.Dense(10, activation='relu'))
+    model.add(layers.Dropout(0.2))
+    model.add(layers.Dense(6, activation='relu'))
+    model.add(layers.Dropout(0.1))
+    model.add(layers.Dense(1, activation='linear'))
+    opt = keras.optimizers.Adam(learning_rate=0.001)
+    
+    model.compile(loss='mean_squared_error', optimizer=opt, metrics=[tf.keras.metrics.MeanAbsoluteError()])
+    model.summary()
+    
+    return model
+    
+estimator = KerasRegressor(build_fn=keras_model, epochs=100, batch_size=10, verbose=1,
+                           validation_data=(X_test, y_test))
+```
+
+
+## Validation & Results
+
+All models created were validated with multiple techniques:
+
+* The regression metrics - MSE, MAE & R2 to determine the best regression model 
+
+
+* Since goals are discrete, the results were also rounded to the nearest integer and compared to actual goal difference as classification metric. This did not yield consistent results, as there are several matches of an "outlier type" (i.e. win or lose by 5 or more goals) that appear only several times and model is having a hard time capturing outliers like this. Yet the predicrion of goal difference for some regular outcomes (i.e. in range [-3;3]) is yielding good resutls.
+
+
+* Lastly, the outcomes were also grouped to just a 3-way outcome: win/lose/draw and again viewed as a classification problem - how many outcomes does the model predict correctly?
+
+
 
 ## Licensing
 

@@ -131,7 +131,93 @@ One of the major features to be used later is the [ELO rating](https://www.elora
 | elo_a  | float64 | elo rating before the match of the away team            |
 | elo_h  | float64 | elo rating before the match of the home team            |
 
-### Step 2: Data Cleaning & Processing
+### Step 2: Data Exploration
+
+Data Exploration step is present in the notebook file "exploration.ipynb".
+```
+# Get shape of dataset
+data.shape
+(13853, 44)
+
+# Describing the dataset
+data.describe()
+```
+
+| goals_h |      goals_a |         xG_h |         xG_a | h_forecast_w | h_forecast_d | h_forecast_l |      shots_h |      shots_a | yellow_card_h |   red_card_h | ... |       xpts_a |       xpxG_h |   ppda_att_h |   ppda_def_h |       deep_h |       xpts_h |        pts_h |        elo_h | elo_a        |
+|--------:|-------------:|-------------:|-------------:|-------------:|-------------:|-------------:|-------------:|-------------:|--------------:|-------------:|----:|-------------:|-------------:|-------------:|-------------:|-------------:|-------------:|-------------:|-------------:|--------------|
+|   count | 13853.000000 | 13853.000000 | 13853.000000 | 13853.000000 | 13853.000000 | 13853.000000 | 13853.000000 | 13853.000000 |  13853.000000 | 13853.000000 | ... | 13853.000000 | 13853.000000 | 13853.000000 | 13853.000000 | 13853.000000 | 13853.000000 | 13853.000000 | 13853.000000 | 13853.000000 |
+|    mean |     1.508915 |     1.178950 |     1.476906 |     1.152637 |     0.447480 |     0.241903 |     0.310615 |    13.730672 |     11.223273 |     1.897206 | ... |     1.161337 |     1.338405 |   237.321302 |    25.014798 |     6.438750 |     1.584344 |     1.585577 |  1490.796304 |  1494.658844 |
+|     std |     1.306599 |     1.152825 |     0.885260 |     0.767695 |     0.283574 |     0.111346 |     0.260603 |     5.273697 |      4.669162 |     1.322074 | ... |     1.276422 |     0.815276 |    83.262398 |     7.172355 |     4.296018 |     0.813286 |     1.317813 |   131.441556 |   131.447553 |
+|     min |     0.000000 |     0.000000 |     0.000000 |     0.000000 |     0.000000 |     0.000000 |     0.000000 |     0.000000 |      0.000000 |     0.000000 | ... |     0.000000 |     0.000000 |    47.000000 |     4.000000 |     0.000000 |     0.000300 |     0.000000 |  1138.167883 |  1147.444700 |
+|     25% |     1.000000 |     0.000000 |     0.818975 |     0.575886 |     0.198300 |     0.166500 |     0.088900 |    10.000000 |      8.000000 |     1.000000 | ... |     0.000000 |     0.737979 |   177.000000 |    20.000000 |     3.000000 |     0.914100 |     0.000000 |  1401.379862 |  1405.299680 |
+|     50% |     1.000000 |     1.000000 |     1.319560 |     1.003800 |     0.427300 |     0.251200 |     0.239600 |    13.000000 |     11.000000 |     2.000000 | ... |     1.000000 |     1.182800 |   229.000000 |    24.000000 |     6.000000 |     1.612200 |     1.000000 |  1474.781373 |  1478.263238 |
+|     75% |     2.000000 |     2.000000 |     1.968160 |     1.564340 |     0.680500 |     0.311300 |     0.487400 |    17.000000 |     14.000000 |     3.000000 | ... |     3.000000 |     1.773270 |   288.000000 |    30.000000 |     9.000000 |     2.264700 |     3.000000 |  1565.940424 |  1570.687567 |
+|     max |    10.000000 |     9.000000 |     6.630490 |     6.186960 |     1.000000 |     0.859000 |     0.999700 |    47.000000 |     39.000000 |     8.000000 | ... |     3.000000 |     6.610910 |   633.000000 |    65.000000 |    42.000000 |     3.000000 |     3.000000 |  1957.502660 |  1958.810098 |
+
+```
+# Check if any NAs left
+data.isna().sum()
+```
+| id            | 0 |
+|---------------|---|
+| isResult      | 0 |
+| datetime      | 0 |
+| team_h        | 0 |
+| team_a        | 0 |
+| id_h          | 0 |
+| id_a          | 0 |
+| goals_h       | 0 |
+| goals_a       | 0 |
+| xG_h          | 0 |
+| xG_a          | 0 |
+| h_forecast_w  | 0 |
+| h_forecast_d  | 0 |
+| h_forecast_l  | 0 |
+| shots_h       | 0 |
+| shots_a       | 0 |
+| yellow_card_h | 0 |
+| yellow_card_a | 0 |
+| red_card_h    | 0 |
+| red_card_a    | 0 |
+| key_passes_h  | 0 |
+| key_passes_a  | 0 |
+| xA_h          | 0 |
+| xA_a          | 0 |
+| xGChain_h     | 0 |
+| xGChain_a     | 0 |
+| xGBuildup_h   | 0 |
+| xGBuildup_a   | 0 |
+| npxG_a        | 0 |
+| ppda_att_a    | 0 |
+| ppda_def_a    | 0 |
+| deep_a        | 0 |
+| xpts_a        | 0 |
+| pts_a         | 0 |
+| npxG_h        | 0 |
+| ppda_att_h    | 0 |
+| ppda_def_h    | 0 |
+| deep_h        | 0 |
+| xpts_h        | 0 |
+| pts_h         | 0 |
+| elo_h         | 0 |
+| elo_a         | 0 |
+| league        | 0 |
+| match_id      | 0 |
+| dtype: int64  |   |
+
+```
+# Data preview
+data.head()
+```
+| id | isResult | datetime |              team_h |               team_a |        id_h | id_a | goals_h | goals_a |     xG_h | ... |   npxG_h | ppda_att_h | ppda_def_h | deep_h | xpts_h | pts_h |  elo_h |  elo_a | league | match_id                     |
+|---:|---------:|---------:|--------------------:|---------------------:|------------:|-----:|--------:|--------:|---------:|----:|---------:|-----------:|-----------:|-------:|-------:|------:|-------:|-------:|-------:|------------------------------|
+|  0 |     4749 |     True | 2014-08-16 12:45:00 |    Manchester United |     Swansea |   89 |      84 |       1 | 1.166350 | ... | 1.166350 |        253 |         25 |      8 | 2.2359 |     0 | 1500.0 | 1500.0 |    epl |      MSUaaacdeeeehinnnrssttw |
+|  1 |     4750 |     True | 2014-08-16 15:00:00 |            Leicester |     Everton |   75 |      72 |       2 | 1.278300 | ... | 1.278300 |        362 |         25 |      1 | 1.9461 |     1 | 1500.0 | 1500.0 |    epl |             ELceeeeinorrsttv |
+|  2 |     4751 |     True | 2014-08-16 15:00:00 |  Queens Park Rangers |        Hull |  202 |      91 |       0 | 1.900670 | ... | 1.126890 |        218 |         17 |      1 | 2.0149 |     0 | 1500.0 | 1500.0 |    epl |        HPQRaaeeegkllnnrrssuu |
+|  3 |     4752 |     True | 2014-08-16 15:00:00 |                Stoke | Aston Villa |   85 |      71 |       0 | 0.423368 | ... | 0.423368 |        132 |         32 |      3 | 0.8041 |     0 | 1500.0 | 1500.0 |    epl |              ASVaeikllnoostt |
+|  4 |     4753 |     True | 2014-08-16 15:00:00 | West Bromwich Albion |  Sunderland |   76 |      77 |       2 | 1.683430 | ... | 0.922260 |        184 |         31 |      6 | 2.0358 |     1 | 1500.0 | 1500.0 |    epl | ABSWabcddeehiillmnnnoorrstuw |
+
+### Step 3: Data Cleaning & Processing
 
 Now it is time clean and process the data necessary for the future model training. At this stage we firstly remove several columns that present way to detailed statistics that might be not fully relevant to predicting match goals. The columns removed are:
 
@@ -152,7 +238,7 @@ As after splitting to each team-level data, each game is represented twice (one 
 
 The data then is getting splitted to train and test set with the ratio of 90% / 10% and getting scaled to a normal distribution based on the training set.
 
-### Step 3: Model Training
+### Step 4: Model Training
 
 The model is built using TF 2.0 / Keras. Multiple models were examined for a long time. The final parameters selected were:
 

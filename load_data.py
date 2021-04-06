@@ -16,7 +16,7 @@ import pickle
 
 from elo import add_elo_ratings
 from data_gathering_functions import loop_fixtures, loop_players, loop_teams
-from data_wrangling_functions import process_fixtures, process_teams, column_name_tidying
+from data_wrangling_functions import process_fixtures, process_teams #, column_name_tidying
 
 import nest_asyncio
 nest_asyncio.apply()
@@ -85,11 +85,11 @@ for league in leagues:
         lst, team_list = add_elo_ratings(lst)
 
 
-    team_set_list = column_name_tidying(team_list, lst)
+    # team_set_list = column_name_tidying(team_list, lst)
     
     
     # Append data for league into main list of leagues
-    datalist.append(team_set_list)
+    datalist.append(lst)
     print("League " + league + " collected succesfully!")
 
 # save processed data to drive

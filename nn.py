@@ -47,19 +47,19 @@ def data_split_and_scale(data):
     return X_train, y_train, X_test, y_test
 
 # defining model 
-def baseline_model(col_number):
+def keras_model():
     
     model = keras.Sequential()
-    model.add(layers.Dense(20, input_dim=col_number, activation='relu', kernel_initializer='normal',  kernel_regularizer='l1'))
-    model.add(layers.Dropout(0.25))
-    model.add(layers.Dense(15, activation='relu'))
-    model.add(layers.Dropout(0.25))
-    model.add(layers.Dense(10, activation='relu'))
-    model.add(layers.Dropout(0.25))
-    model.add(layers.Dense(5, activation='relu'))  #,  kernel_regularizer='l2'
-    model.add(layers.Dropout(0.10))
+    model.add(layers.Dense(30, input_dim=col_number, activation='relu', kernel_initializer='normal', kernel_regularizer='l2'))
+    model.add(layers.Dropout(0.2))
+    model.add(layers.Dense(20, activation='relu'))
+    model.add(layers.Dropout(0.2))
+    model.add(layers.Dense(16, activation='relu'))
+    model.add(layers.Dropout(0.1))
+    model.add(layers.Dense(10, activation='relu'))  #,  kernel_regularizer='l2'
+    model.add(layers.Dropout(0.1))
     model.add(layers.Dense(1, activation='linear'))
-    opt = keras.optimizers.Adam(learning_rate=0.001)
+    opt = keras.optimizers.Adam(learning_rate=0.0001)
     
     model.compile(loss='mean_squared_error', optimizer=opt, metrics=[tf.keras.metrics.MeanAbsoluteError()])  # Compile model
     model.summary()
@@ -135,7 +135,7 @@ X_train, y_train, X_test, y_test = data_split_and_scale(data)
 col_number=len(data.columns)-1
 
 # Define model
-estimator = KerasRegressor(build_fn=baseline_model(col_number), epochs=100, batch_size=10, verbose=1,
+estimator = KerasRegressor(build_fn=keras_model, epochs=100, batch_size=10, verbose=1,
                            validation_data=(X_test, y_test)) #callbacks=[es]
 
 # es = EarlyStopping(monitor='val_loss', mode='min', verbose=1)
@@ -147,7 +147,7 @@ y_true, y_pred = y_test, estimator.predict(X_test)  # make predictions
 comparison = analyze_model(y_test, y_true)  # print the model results and get the overview
 
 # save the model to file
-estimator.model.save('saved_model.h5')
+# estimator.model.save('saved_model.h5')
 
 # load model from file
 # model2 = KerasRegressor(build_fn=baseline_model, epochs=10, batch_size=10, verbose=1)

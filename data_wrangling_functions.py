@@ -116,45 +116,48 @@ def process_teams(p, fixtures):
     return fixtures
 
 
-def column_name_tidying(team_list, lst):
+# def column_name_tidying(team_list, lst):
     
-    all_teams = list(team_list.keys())  # get the list of all teams in this competition
-    team_set_list = []  # placehodler list
+#     all_teams = list(team_list.keys())  # get the list of all teams in this competition
+#     team_set_list = []  # placehodler list
     
-    # loop the data for each team
-    for team in range(0, len(all_teams)):
+#     # loop the data for each team
+#     for team in range(0, len(all_teams)):
         
-        # placeholder frames
-        t = pd.DataFrame()
-        t2 = pd.DataFrame()
+#         # placeholder frames
+#         t = pd.DataFrame()
+#         t2 = pd.DataFrame()
         
-        team_set = []  # placehodler
+#         team_set = []  # placehodler
         
-        # loop for each season
-        for i in range(0, len(lst)):
+#         # loop for each season
+#         for i in range(0, len(lst)):
             
-            df = lst[i]  # season data
+#             df = lst[i]  # season data
             
-            # slice data for individual team (where it present as home) and rename columns to use suffixes correctly 
-            temp = df.loc[df['team_h'] == all_teams[team]]
-            t = temp.filter(regex=r'(_h$|_a$|datetime)', axis=1)
-            t['location'] = 'h'
-            t = t.reset_index()
-            t = t.rename(columns=lambda x: re.sub('_h$','',x))
-            t = t.rename(columns=lambda x: re.sub('_a$','_vs',x))
+#             # slice data for individual team (where it present as home) and rename columns to use suffixes correctly 
+#             temp = df.loc[df['team_h'] == all_teams[team]]
+#             t = temp.filter(regex=r'(_h$|_a$|datetime)', axis=1)
+#             t['location'] = 'h'
+#             t = t.reset_index()
+#             t = t.rename(columns=lambda x: re.sub('_h$','',x))
+#             t = t.rename(columns=lambda x: re.sub('_a$','_vs',x))
             
-            # same suffixing of the columns for away games
-            t2 = df.loc[df['team_a'] == all_teams[team]]
-            t2 = t2.filter(regex=r'(_a$|_h$|datetime)', axis=1)
-            t2['location'] = 'a'
-            t2 = t2.reset_index()
-            t2 = t2.rename(columns=lambda x: re.sub('_a$','',x))
-            t2 = t2.rename(columns=lambda x: re.sub('_h$','_vs',x))
+#             # same suffixing of the columns for away games
+#             t2 = df.loc[df['team_a'] == all_teams[team]]
+#             t2 = t2.filter(regex=r'(_a$|_h$|datetime)', axis=1)
+#             t2['location'] = 'a'
+#             t2 = t2.reset_index()
+#             t2 = t2.rename(columns=lambda x: re.sub('_h$','',x))
+#             t2 = t2.rename(columns=lambda x: re.sub('_a$','_vs',x))
             
-            team_set.append(pd.concat([t,t2]))  # return back slices together
+#             team_set.append(pd.concat([t,t2]))  # return back slices together
             
-        team_set_list.append(pd.concat(team_set).sort_values(by='datetime'))  # append the data for the full league back together and sort
+#         team_set_list.append(pd.concat(team_set).sort_values(by='datetime'))  # append the data for the full league back together and sort
     
-    return team_set_list
+#     return team_set_list
            
-            
+# m = a['location'] == 'a'
+
+# a.loc[m, ['team', 'team_vs']] = (
+#     df.loc[m, ['team_vs', 'team']].values)

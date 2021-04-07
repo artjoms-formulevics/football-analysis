@@ -292,9 +292,14 @@ Lastly let's see the full correlation matrix. Probably the most interesting poin
 
 ### Step 3: Data Cleaning & Processing
 
-Now it is time clean and process the data necessary for the future model training. At this stage we firstly remove several columns that present way to detailed statistics that might be not fully relevant to predicting match goals. The columns removed are:
+Now it is time clean and process the data necessary for the future model training. In order to be able to calculate rolling means (used for prediction) we have to group data by each team and make calulcations for each. That raises additional issue - sonce each game is a combination of two teams, calculating data fora each team will duplicate number of games.
 
-* ...
+At this stage we firstly remove several columns that might be not fully relevant to predicting match goals. The columns removed are:
+
+* h_forecast_d
+* h_forecast_l
+* h_forecast_w
+* isResult 
 
 For all the features we are planning to use, we have to do some pre-processing. Namely, we do not know the exact statistics of the match before it was played. So we need to take historical averages for each team. For that we are splitting data on per-team level, sorting it historically and calculating averages from some time perion in the past. The periods that were tried are:
 
@@ -307,7 +312,26 @@ In the end, average of last 5 games was selected, as it was the most descriptive
 
 In this stage we also define out target variable, that we are willing to predict. This is going to be goal difference (simply goals by home team minus goals by away team). That would imply a win of home team in case of positive number, lose of home team in case of negative number and draw in case the value is equal to zero.
 
-As after splitting to each team-level data, each game is represented twice (one game is played beween to team, so a game between Liverool and Manchester United will be part of both Liverpool's and United's subsets), the duplciates are identified and removed.
+Hence we are splitting the data and grouping it by each team in a historical order to calculate rolling means.
+
+As after splitting to each team-level data, each game is represented twice (one game is played beween to team, so a game between Liverool and Manchester United will be part of both Liverpool's and United's subsets), the duplciates are identified and removed. For that a unique match id (conssiting of team names) is created. This helps to ensure that we are able to identify each unique match by the combination of new match id (teams playing) and the timestamp (it is not possible for the same two teams having more than one game at the one particular point in time).
+
+Data is then merged back together and after more manipulation fiwh column names and suffixes, represents only one unique game and stats for both teams - home and way (disregarding of who did play that game). We may name this dataset consistent and ready to be used for the future model training training.
+
+To make the model more precise and lightweight, we'll also drop features that seem to have to little impact on total goals scored:
+
+* yellow cards
+* red cards
+* ppda_att
+* ppda_def
+* pts
+* xpts
+
+and a bit redundant feature:
+
+* npxG
+
+The location variable (home/away) is also excluded, we are viewing the game as the single game, not from the team's PoV.
 
 The data then is getting splitted to train and test set with the ratio of 90% / 10% and getting scaled to a normal distribution based on the training set.
 
@@ -317,7 +341,7 @@ The model is built using TF 2.0 / Keras. Multiple models were examined for a lon
 
 * Model = Keras Regressor
 * Input layer with 20 neurons - ReLU & L2 regularization
-* Three hidden layers (16, 10 & 6 neurons) - all ReLU
+* Three hidden layers (16, 14 & 10 neurons) - all ReLU
 * Output layer - linear activation
 * Optimizer - Adam (LR = 0.001)
 * Loss = MSE (+ MAE for reporting)
@@ -334,36 +358,96 @@ def keras_model():
     model.add(layers.Dropout(0.2))
     model.add(layers.Dense(16, activation='relu'))
     model.add(layers.Dropout(0.2))
+    model.add(layers.Dense(14, activation='relu'))
+    model.add(layers.Dropout(0.1))
     model.add(layers.Dense(10, activation='relu'))
-    model.add(layers.Dropout(0.2))
-    model.add(layers.Dense(6, activation='relu'))
     model.add(layers.Dropout(0.1))
     model.add(layers.Dense(1, activation='linear'))
     opt = keras.optimizers.Adam(learning_rate=0.001)
     
-    model.compile(loss='mean_squared_error', optimizer=opt, metrics=[tf.keras.metrics.MeanAbsoluteError()])
+    model.compile(loss='mean_squared_error', optimizer=opt, metrics=[tf.keras.metrics.MeanAbsoluteError()])  # Compile model
     model.summary()
     
     return model
     
 estimator = KerasRegressor(build_fn=keras_model, epochs=100, batch_size=10, verbose=1,
-                           validation_data=(X_test, y_test))
+                           validation_data=(X_test, y_test)) 
 ```
 
 
 ## Validation & Results
 
-All models created were validated with multiple techniques:
+All models created were validated with multiple techniques. The best & selected model's results are presented below:
 
 * The regression metrics - MSE, MAE & R2 to determine the best regression model 
 
+```
+MSE: 1.25902
+MAE: 0.86262
+R2: 0.60355
+```
 
 * Since goals are discrete, the results were also rounded to the nearest integer and compared to actual goal difference as classification metric. This did not yield consistent results, as there are several matches of an "outlier type" (i.e. win or lose by 5 or more goals) that appear only several times and model is having a hard time capturing outliers like this. Yet the predicrion of goal difference for some regular outcomes (i.e. in range [-3;3]) is yielding good resutls.
 
+Classfification Report:
+
+```
+              precision    recall  f1-score   support
+
+          -5       0.00      0.00      0.00         4
+          -4       0.00      0.00      0.00        15
+          -3       0.00      0.00      0.00        43
+          -2       0.24      0.05      0.08       106
+          -1       0.36      0.39      0.37       215
+           0       0.42      0.64      0.51       284
+           1       0.38      0.57      0.46       240
+           2       0.25      0.20      0.22       147
+           3       0.10      0.01      0.03        67
+           4       0.00      0.00      0.00        37
+           5       0.00      0.00      0.00        10
+           6       0.00      0.00      0.00         3
+           8       0.00      0.00      0.00         1
+
+    accuracy                           0.37      1172
+   macro avg       0.13      0.14      0.13      1172
+weighted avg       0.30      0.37      0.32      1172
+
+Accuracy: 0.374
+Balanced Accuracy: 0.143
+Precision: 0.305
+Recall: 0.374
+F1 Score: 0.322
+```
 
 * Lastly, the outcomes were also grouped to just a 3-way outcome: win/lose/draw and again viewed as a classification problem - how many outcomes does the model predict correctly?
 
+```
+Classfification Report:
 
+              precision    recall  f1-score   support
+
+          -1       0.87      0.58      0.70       383
+           0       0.42      0.64      0.51       284
+           1       0.82      0.79      0.80       505
+
+    accuracy                           0.69      1172
+   macro avg       0.71      0.67      0.67      1172
+weighted avg       0.74      0.69      0.70      1172
+
+
+Confusion Matrix:
+
+[[224 148  11]
+ [ 26 183  75]
+ [  7 101 397]]
+
+Accuracy: 0.686
+Balanced Accuracy: 0.672
+Precision: 0.742
+Recall: 0.686
+F1 Score: 0.699
+```
+As a result we can conclude that it is quite hard to predict game outcome using deep technical football stats like xG. As we know even "football giants" sometimes fail and small teams give us surprises. Most probably this won't help predicting outcomes and win against bookmakers. Nevertheless this analysis might be used as a supplement to one's decision.
 
 ## Licensing
 

@@ -28,7 +28,7 @@ and two supplements: `data_gathering_functions.py` and `data_wrangling_functions
 
 ## Detailed Description
 
-Here is step by step description of the steps taken.
+* Environment used: MacOS Big Sur 11.1 (Intel), Python pyenv+miniconda+3.8.5 / pyenv+3.9.0
 
 ### Step 1: Data Gathering & Wrangling
 

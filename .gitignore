@@ -128,3 +128,4 @@ database.sqlite
 *.spydata
 raw_data_backup.pickle
 .DS_Store
+.DS_Store

@@ -34,7 +34,7 @@ Data for six European football leagues is present on Understat:
 * German Bundesliga
 * Italian Serie A
 * French Ligue 1
-* Russian Premier League
+* Russian Premier League (RFPL)
 
 The historical data is available starting from season 2014/15 up to last in-progress saeson 2020/21, totalling 7 seasons (6 full and 1 ongoing).
 
@@ -216,6 +216,79 @@ data.head()
 |  2 |     4751 |     True | 2014-08-16 15:00:00 |  Queens Park Rangers |        Hull |  202 |      91 |       0 | 1.900670 | ... | 1.126890 |        218 |         17 |      1 | 2.0149 |     0 | 1500.0 | 1500.0 |    epl |        HPQRaaeeegkllnnrrssuu |
 |  3 |     4752 |     True | 2014-08-16 15:00:00 |                Stoke | Aston Villa |   85 |      71 |       0 | 0.423368 | ... | 0.423368 |        132 |         32 |      3 | 0.8041 |     0 | 1500.0 | 1500.0 |    epl |              ASVaeikllnoostt |
 |  4 |     4753 |     True | 2014-08-16 15:00:00 | West Bromwich Albion |  Sunderland |   76 |      77 |       2 | 1.683430 | ... | 0.922260 |        184 |         31 |      6 | 2.0358 |     1 | 1500.0 | 1500.0 |    epl | ABSWabcddeehiillmnnnoorrstuw |
+
+```# Plotting total goals per match distribution```
+
+![1](./pics/1.png)
+
+|       |   goals_home |   goals_away | total_goals  |
+|------:|-------------:|-------------:|--------------|
+| count | 13853.000000 | 13853.000000 | 13853.000000 |
+|  mean |     1.508915 |     1.178950 |     2.687865 |
+|   std |     1.306599 |     1.152825 |     1.663557 |
+|   min |     0.000000 |     0.000000 |     0.000000 |
+|   25% |     1.000000 |     0.000000 |     1.000000 |
+|   50% |     1.000000 |     1.000000 |     3.000000 |
+|   75% |     2.000000 |     2.000000 |     4.000000 |
+|   max |    10.000000 |     9.000000 |    12.000000 |
+
+There are usually 2-3 goals on average per game. Home team scores more on average - 1.51 goals vs 1.18 by away team.
+
+```# Listing the games with most total goals (10+)```
+
+![13](./pics/13.png)
+
+Only very few games were concluded with 10 or more goals, as we can see - mostly from Spanish La Liga and quite surprisingly from Russian Premier League. Real Madrid appears (solely on the winning side) in 4 of 10 games. Interesting that not only all games are of one team dominance - 2 games of 10 could be described as fairly close with the final score of 6-4.
+
+```# Comparing distribution of xG of teams playing home and away```
+
+![2](./pics/2.png)
+
+Similarly to goals, it can be seen that home teams produce more xG on average than away playing teams.
+
+```# Plotting distribution of xG by league```
+
+![9](./pics/9.png)
+
+Here is the comparison of total xG per game for each of the leagues. he results are fairly similar with La Liga and Bundesliga leaning towards more xG while Ligue 1 and RFPL tend to have less average xG.
+
+```# Plotting distribution of team elo ratings by league```
+
+![3](./pics/3.png)
+
+Thanks to that we can see approximate distribution of "power" inside a league. For instance comparing Serie A and Ligue 1: Italian league has more smooth and equal distribution, while French league has a spike of around Elo of 1500. That would mean that teams in Serie A flow around the Elo rating more, having better or worse results (i.e. teams like Inter, Milan, Roma, Napoli, Lazio are always having different resutls each year), while the most of French teams tend to stay within the average Elo and only handful of teams are in the lead (e.g. PSG is constantly winning).
+
+```# Plotting last (current) elo rating of a team```
+
+![12](./pics/12.png)
+
+This shows the last available Ero rating of the team and which of them are the most powerful right now.
+
+```# Plotting scatter plot between Elo and xG by league, home and away```
+
+![4](./pics/4.png)
+![5](./pics/5.png)
+
+We can see for example that RFPL is far more concentrated (especially on the away side). On the other hand, leagues like La Liga or Bundesliga show more clearly top teams with high elo that have larger xG scores. Nevertheless the Elo seem to have not a huge impact on xG meaning that both "bad" and "good" teams can produce large (or small) xG numbers per match. 
+
+```# Plotting pairplot for selected home team stats```
+
+![6](./pics/6.png)
+
+Having extended multivariate analysis on some (arbitrary) key stats shows us Elo rating being uncorrelated to other features. From obvious connections - xA is highly correlated with xG and shots. Interestingly that xA and shots correlation is much stronger than xG and shots. It is logical, but shows once again how many shots could be absolutely irrelevant to xG and hence not threatening at all. Similar picutre is seen for away stats, hence we will not display it here.
+
+```# Plotting shots made by some popular teams home and away```
+
+![10](./pics/10.png)
+![11](./pics/11.png)
+
+Out of curiosity, we can select few popular clubs from each league and see shot distribution. First of all it shows how home games produce more shots. Secondly there is a clear outsider in terms of shots made - Atletico Madrid, but definetely not in terms of results, which says that number of shots is not the most important key to success.
+
+```# Plotting correlation matrix for all the features in the dataset ```
+
+![8](./pics/8.png)
+
+Lastly let's see the full correlation matrix. Probably the most interesting point taken is the absolute low correlation for cards, both yellow and red to all other features, meaning style of play (fair or rough) does not influence much the outcomes of the game.
 
 ### Step 3: Data Cleaning & Processing
 

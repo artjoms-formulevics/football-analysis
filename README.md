@@ -1,26 +1,34 @@
 # Football-Analysis/Predictor
  
-Repo for football match outcome predictor
+Repo for football match outcome predictor using neural networks
 
 ## Disclaimer
 
-...
+This analysis was conducted just of personal interest and for personal needs. It is just a personal experience. It does not imply any advice or pretend to be truthful. The code presented here can be definitely improved in quality. The resultsts are subjective and may deviate from reality.
+
+However I would welcome any friendly discussions, questions, suggestions and comments. Please also be free to use this analysis in parts or in full for any purposes, yet reference would be appreciated. :)
 
 ## Foreword
 
-...
+Big credit goes to the amazing website with metrics [Understat](https://understat.com/]) and authors of [understat](https://github.com/amosbastian/understat) python library that was amzingly helpful for data collection.
 
 ## Goal
 
-...
+The main goal is to predict outcomes of football matches in top leagues by using comprehensive football metrics like xG.
 
 ## Structure
 
-...
+The project consists of 4 main files:
+* `load_data.py` - for downloading and initial data wrangling
+* `exploration.ipynb` - notebook for data exploration & visualizations
+* `data_preprocessing.py` - for pre-processing before training
+* `nn.py` - creating NN model and validating the results
+
+and two supplements: `data_gathering_functions.py` and `data_wrangling_functions.py`.
 
 ## Detailed Description
 
-..
+Here is step by step description of the steps taken.
 
 ### Step 1: Data Gathering & Wrangling
 
@@ -115,7 +123,7 @@ Some stats are stored in the match-level tables for each match. Therefore, each 
 | shots_h       | float64 | shots made by home team                 |
 | xA_a          | float64 | expected assists (xA) made by away team |
 | xA_h          | float64 | expected assists (xA) made by home team |
-| xGBuildup_a   | float64 |                                         |
+| xGBuildup_a   | float64 |[about xG BuildUp & Chain](https://statsbomb.com/2018/08/introducing-xgchain-and-xgbuildup/)                                         |
 | xGBuildup_h   | float64 |                                         |
 | xGChain_a     | float64 |                                         |
 | xGChain_h     | float64 |                                         |

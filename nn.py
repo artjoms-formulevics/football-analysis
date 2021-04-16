@@ -144,7 +144,7 @@ estimator.fit(X_train, y_train)  # fit model
 
 y_true, y_pred = y_test, estimator.predict(X_test)  # make predictions
 
-comparison = analyze_model(y_test, y_true)  # print the model results and get the overview
+comparison = analyze_model(y_pred, y_true)  # print the model results and get the overview
 
 # save the model to file
 estimator.model.save('saved_model.h5')

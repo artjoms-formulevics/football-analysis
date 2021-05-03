@@ -326,22 +326,35 @@ As after splitting to each team-level data, each game is represented twice (one 
 
 Data is then merged back together and after more manipulation fiwh column names and suffixes, represents only one unique game and stats for both teams - home and way (disregarding of who did play that game). We may name this dataset consistent and ready to be used for the future model training training.
 
-To make the model more precise and lightweight, we'll also drop features that seem to have to little impact on total goals scored:
-
-* yellow cards
-* red cards
-* ppda_att
-* ppda_def
-* pts
-* xpts
-
-and a bit redundant feature:
-
-* npxG
-
 The location variable (home/away) is also excluded, we are viewing the game as the single game, not from the team's PoV.
 
 The data then is getting splitted to train and test set with the ratio of 90% / 10% and getting scaled to a normal distribution based on the training set.
+
+#### PCA
+
+Since there are more than 30 variables and not all of them are expected to be equally important, a dimensionality reduction using PCA was conducted to leave features that account for 95% of variance - total of 18 features. 
+
+![pca](./pics/pca.png)
+
+| PC0  | npxG_last5_h        |
+|------|---------------------|
+| PC1  | xGChain_last5_a     |
+| PC2  | yellow_card_last5_h |
+| PC3  | ppda_att_last5_a    |
+| PC4  | elo_a               |
+| PC5  | pts_last5_h         |
+| PC6  | red_card_last5_a    |
+| PC7  | red_card_last5_h    |
+| PC8  | ppda_def_last5_h    |
+| PC9  | red_card_last5_a    |
+| PC10 | yellow_card_last5_a |
+| PC11 | ppda_att_last5_a    |
+| PC12 | ppda_att_last5_h    |
+| PC13 | pts_last5_a         |
+| PC14 | elo_last5_h         |
+| PC15 | ppda_att_last5_h    |
+| PC16 | goals_last5_h       |
+| PC17 | goals_last5_a       |
 
 ### Step 4: Model Training
 
@@ -362,16 +375,18 @@ The model looks like this:
 def keras_model():
     
     model = keras.Sequential()
-    model.add(layers.Dense(20, input_dim=col_number, activation='relu', kernel_initializer='normal', kernel_regularizer='l2'))
+    model.add(layers.Dense(100, input_dim=col_number, activation='relu', kernel_initializer='normal', kernel_regularizer='l2'))
     model.add(layers.Dropout(0.2))
-    model.add(layers.Dense(16, activation='relu'))
+    model.add(layers.Dense(80, activation='relu'))
     model.add(layers.Dropout(0.2))
-    model.add(layers.Dense(14, activation='relu'))
+    model.add(layers.Dense(60, activation='relu'))
     model.add(layers.Dropout(0.1))
-    model.add(layers.Dense(10, activation='relu'))
+    model.add(layers.Dense(40, activation='relu'))  #,  kernel_regularizer='l2'
+    model.add(layers.Dropout(0.1))
+    model.add(layers.Dense(20, activation='relu'))
     model.add(layers.Dropout(0.1))
     model.add(layers.Dense(1, activation='linear'))
-    opt = keras.optimizers.Adam(learning_rate=0.001)
+    opt = keras.optimizers.Adam(learning_rate=0.0001)
     
     model.compile(loss='mean_squared_error', optimizer=opt, metrics=[tf.keras.metrics.MeanAbsoluteError()])  # Compile model
     model.summary()

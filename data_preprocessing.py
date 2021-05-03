@@ -14,8 +14,8 @@ import re
 # Function to calculate rolling mean of the features
 def calculate_lag(df):
     
-    df.drop(['yellow_card', 'red_card', 'ppda_att', 
-           'ppda_def', 'pts', 'xpts', 'npxG'], axis=1, inplace=True, errors='ignore')
+    # df.drop(['yellow_card', 'red_card', 'ppda_att', 
+    #        'ppda_def', 'pts', 'xpts', 'npxG'], axis=1, inplace=True, errors='ignore')
     
     original_number_of_cols = len(df.columns)-1  # get number of columns for processing
     

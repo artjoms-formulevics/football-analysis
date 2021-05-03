@@ -129,3 +129,4 @@ database.sqlite
 raw_data_backup.pickle
 .DS_Store
 .DS_Store
+saved_model.h5

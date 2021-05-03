@@ -8,19 +8,52 @@ Created on Fri Mar 12 17:18:32 2021
 
 import pandas as pd
 import numpy as np
-import tensorflow as tf
+import matplotlib.pyplot as plt
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, f1_score
 from sklearn.metrics import balanced_accuracy_score, precision_score, recall_score, roc_auc_score
+from sklearn.decomposition import PCA
 
+import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 from keras.models import load_model
 from keras.wrappers.scikit_learn import KerasRegressor
 from keras.callbacks import EarlyStopping
+
+# function to perform PCA dimensionality reduction on training and test sets 
+def PCA_reduction(X_train, X_test, cols, n=0.90):
+    
+    # fit PCA on training set and plot curve
+    pca = PCA(n_components=n).fit(X_train)
+    plt.plot(np.cumsum(pca.explained_variance_ratio_))
+    plt.xlabel('number of components')
+    plt.ylabel('cumulative explained variance')
+    
+    # transfrom train and test sets
+    X_train = pca.transform(X_train)
+    X_test = pca.transform(X_test)
+    
+    # get number of components
+    n_pcs= pca.components_.shape[0]
+    
+    # get the index of the most important feature on each component
+    most_important = [np.abs(pca.components_[i]).argmax() for i in range(n_pcs)]
+
+    # get the names
+    most_important_names = [cols[most_important[i]] for i in range(n_pcs)]
+    
+    dic = {'PC{}'.format(i): most_important_names[i] for i in range(n_pcs)}
+    
+    # build the dataframe of most important components
+    most_important_features = pd.DataFrame(dic.items())
+    
+    print(most_important_features)  # see the results
+    
+    return X_train, X_test
 
 # function to split the data into two sets and scale it
 def data_split_and_scale(data):
@@ -40,9 +73,14 @@ def data_split_and_scale(data):
     y_test = y_test.to_list()
     y_test = np.array([np.array(xi) for xi in y_test])
     
+    cols = list(X_test.columns)  # store original column list
+    
+    # Scale data
     sc = StandardScaler()
     X_train.loc[:, X_train.columns != 'location'] = sc.fit_transform(X_train.loc[:, X_train.columns != 'location'] )  
     X_test.loc[:, X_test.columns != 'location'] = sc.transform(X_test.loc[:, X_test.columns != 'location'])  
+    
+    X_train, X_test = PCA_reduction(X_train, X_test, cols, 0.95)  # call dim reduction function
 
     return X_train, y_train, X_test, y_test
 
@@ -50,16 +88,18 @@ def data_split_and_scale(data):
 def keras_model():
     
     model = keras.Sequential()
-    model.add(layers.Dense(20, input_dim=col_number, activation='relu', kernel_initializer='normal', kernel_regularizer='l2'))
+    model.add(layers.Dense(100, input_dim=col_number, activation='relu', kernel_initializer='normal', kernel_regularizer='l2'))
     model.add(layers.Dropout(0.2))
-    model.add(layers.Dense(16, activation='relu'))
+    model.add(layers.Dense(80, activation='relu'))
     model.add(layers.Dropout(0.2))
-    model.add(layers.Dense(14, activation='relu'))
+    model.add(layers.Dense(60, activation='relu'))
     model.add(layers.Dropout(0.1))
-    model.add(layers.Dense(10, activation='relu'))  #,  kernel_regularizer='l2'
+    model.add(layers.Dense(40, activation='relu'))  #,  kernel_regularizer='l2'
+    model.add(layers.Dropout(0.1))
+    model.add(layers.Dense(20, activation='relu'))
     model.add(layers.Dropout(0.1))
     model.add(layers.Dense(1, activation='linear'))
-    opt = keras.optimizers.Adam(learning_rate=0.001)
+    opt = keras.optimizers.Adam(learning_rate=0.0001)
     
     model.compile(loss='mean_squared_error', optimizer=opt, metrics=[tf.keras.metrics.MeanAbsoluteError()])  # Compile model
     model.summary()
@@ -132,10 +172,10 @@ data = pd.read_csv('data.csv', index_col=0)
 X_train, y_train, X_test, y_test = data_split_and_scale(data)
 
 # Get number of features
-col_number=len(data.columns)-1
+col_number = X_train.shape[1]
 
 # Define model
-estimator = KerasRegressor(build_fn=keras_model, epochs=100, batch_size=10, verbose=1,
+estimator = KerasRegressor(build_fn=keras_model, epochs=300, batch_size=10, verbose=1,
                            validation_data=(X_test, y_test)) #callbacks=[es]
 
 # es = EarlyStopping(monitor='val_loss', mode='min', verbose=1)
